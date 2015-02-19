@@ -137,7 +137,7 @@ class Parsedown
                 continue;
             }
 
-            if (strpos($line, "\t") !== false)
+            if (mb_strpos($line, "\t") !== false)
             {
                 $parts = explode("\t", $line);
 
@@ -789,7 +789,7 @@ class Parsedown
             return;
         }
 
-        if (strpos($Block['element']['text'], '|') !== false and chop($Line['text'], ' -:|') === '')
+        if (mb_strpos($Block['element']['text'], '|') !== false and chop($Line['text'], ' -:|') === '')
         {
             $alignments = array();
 
@@ -896,7 +896,7 @@ class Parsedown
             return;
         }
 
-        if ($Line['text'][0] === '|' or strpos($Line['text'], '|'))
+        if ($Line['text'][0] === '|' or mb_strpos($Line['text'], '|'))
         {
             $Elements = array();
 
@@ -995,7 +995,7 @@ class Parsedown
         {
             $marker = $excerpt[0];
 
-            $markerPosition += strpos($unexaminedText, $marker);
+            $markerPosition += mb_strpos($unexaminedText, $marker);
 
             $Excerpt = array('text' => $excerpt, 'context' => $text);
 
@@ -1069,7 +1069,7 @@ class Parsedown
 
     protected function inlineEmailTag($Excerpt)
     {
-        if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<((mailto:)?\S+?@\S+?)>/i', $Excerpt['text'], $matches))
+        if (mb_strpos($Excerpt['text'], '>') !== false and preg_match('/^<((mailto:)?\S+?@\S+?)>/i', $Excerpt['text'], $matches))
         {
             $url = $matches[1];
 
@@ -1243,7 +1243,7 @@ class Parsedown
 
     protected function inlineMarkup($Excerpt)
     {
-        if ($this->markupEscaped or strpos($Excerpt['text'], '>') === false)
+        if ($this->markupEscaped or mb_strpos($Excerpt['text'], '>') === false)
         {
             return;
         }
@@ -1341,7 +1341,7 @@ class Parsedown
 
     protected function inlineUrlTag($Excerpt)
     {
-        if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<(\w+:\/{2}[^ >]+)>/i', $Excerpt['text'], $matches))
+        if (mb_strpos($Excerpt['text'], '>') !== false and preg_match('/^<(\w+:\/{2}[^ >]+)>/i', $Excerpt['text'], $matches))
         {
             $url = str_replace(array('&', '<'), array('&amp;', '&lt;'), $matches[1]);
 
@@ -1446,12 +1446,55 @@ class Parsedown
             $markup = $trimmedMarkup;
             $markup = mb_substr($markup, 3);
 
-            $position = strpos($markup, "</p>");
+            $position = mb_strpos($markup, "</p>");
 
-            $markup = substr_replace($markup, '', $position, 4);
+            $markup = $this->mb_substr_replace($markup, '', $position, 4);
         }
 
         return $markup;
+    }
+
+    /**
+     * @copyright https://gist.github.com/stemar/8287074
+     * @param $string
+     * @param $replacement
+     * @param $start
+     * @param null $length
+     * @return array|string
+     */
+    private function mb_substr_replace($string, $replacement, $start, $length = null)
+    {
+        if (is_array($string)) {
+            $num = count($string);
+            // $replacement
+            $replacement = is_array($replacement) ? array_slice($replacement, 0, $num) : array_pad(array($replacement), $num, $replacement);
+            // $start
+            if (is_array($start)) {
+                $start = array_slice($start, 0, $num);
+                foreach ($start as $key => $value)
+                    $start[$key] = is_int($value) ? $value : 0;
+            } else {
+                $start = array_pad(array($start), $num, $start);
+            }
+            // $length
+            if (!isset($length)) {
+                $length = array_fill(0, $num, 0);
+            } elseif (is_array($length)) {
+                $length = array_slice($length, 0, $num);
+                foreach ($length as $key => $value) {
+                    $length[$key] = isset($value) ? (is_int($value) ? $value : $num) : 0;
+                }
+            } else {
+                $length = array_pad(array($length), $num, $length);
+            }
+            // Recursive call
+            return array_map(__FUNCTION__, $string, $replacement, $start, $length);
+        }
+        preg_match_all('/./us', (string)$string, $smatches);
+        preg_match_all('/./us', (string)$replacement, $rmatches);
+        if ($length === null) $length = mb_strlen($string);
+        array_splice($smatches[0], $start, $length, $rmatches[0]);
+        return implode($smatches[0]);
     }
 
     #
