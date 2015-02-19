@@ -1,5 +1,5 @@
 {
-    "name": "erusev/parsedown",
+    "name": "popsul/parsedown",
     "description": "Parser for Markdown.",
     "keywords": ["markdown", "parser"],
     "homepage": "http://parsedown.org",
@@ -10,6 +10,11 @@
             "name": "Emanuil Rusev",
             "email": "hello@erusev.com",
             "homepage": "http://erusev.com"
+        },
+        {
+          "name": "Viktor Suprun",
+          "email": "popsul1993@gmail.com",
+          "homepage": "http://popsul.name"
         }
     ],
     "autoload": {

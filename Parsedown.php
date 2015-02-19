@@ -161,7 +161,7 @@ class Parsedown
                 $indent ++;
             }
 
-            $text = $indent > 0 ? substr($line, $indent) : $line;
+            $text = $indent > 0 ? mb_substr($line, $indent) : $line;
 
             # ~
 
@@ -298,7 +298,7 @@ class Parsedown
 
         if ($Line['indent'] >= 4)
         {
-            $text = substr($Line['body'], 4);
+            $text = mb_substr($Line['body'], 4);
 
             $Block = array(
                 'element' => array(
@@ -328,7 +328,7 @@ class Parsedown
 
             $Block['element']['text']['text'] .= "\n";
 
-            $text = substr($Line['body'], 4);
+            $text = mb_substr($Line['body'], 4);
 
             $Block['element']['text']['text'] .= $text;
 
@@ -439,7 +439,7 @@ class Parsedown
 
         if (preg_match('/^'.$Block['char'].'{3,}[ ]*$/', $Line['text']))
         {
-            $Block['element']['text']['text'] = substr($Block['element']['text']['text'], 1);
+            $Block['element']['text']['text'] = mb_substr($Block['element']['text']['text'], 1);
 
             $Block['complete'] = true;
 
@@ -684,9 +684,9 @@ class Parsedown
                 'markup' => $Line['text'],
             );
 
-            $length = strlen($matches[0]);
+            $length = mb_strlen($matches[0]);
 
-            $remainder = substr($Line['text'], $length);
+            $remainder = mb_substr($Line['text'], $length);
 
             if (trim($remainder) === '')
             {
@@ -816,7 +816,7 @@ class Parsedown
                     $alignment = 'left';
                 }
 
-                if (substr($dividerCell, - 1) === ':')
+                if (mb_substr($dividerCell, - 1) === ':')
                 {
                     $alignment = $alignment === 'left' ? 'center' : 'right';
                 }
@@ -1018,13 +1018,13 @@ class Parsedown
                     $Inline['position'] = $markerPosition;
                 }
 
-                $unmarkedText = substr($text, 0, $Inline['position']);
+                $unmarkedText = mb_substr($text, 0, $Inline['position']);
 
                 $markup .= $this->unmarkedText($unmarkedText);
 
                 $markup .= isset($Inline['markup']) ? $Inline['markup'] : $this->element($Inline['element']);
 
-                $text = substr($text, $Inline['position'] + $Inline['extent']);
+                $text = mb_substr($text, $Inline['position'] + $Inline['extent']);
 
                 $unexaminedText = $text;
 
@@ -1033,7 +1033,7 @@ class Parsedown
                 continue 2;
             }
 
-            $unexaminedText = substr($excerpt, 1);
+            $unexaminedText = mb_substr($excerpt, 1);
 
             $markerPosition ++;
         }
@@ -1058,7 +1058,7 @@ class Parsedown
             $text = preg_replace("/[ ]*\n/", ' ', $text);
 
             return array(
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
                 'element' => array(
                     'name' => 'code',
                     'text' => $text,
@@ -1079,7 +1079,7 @@ class Parsedown
             }
 
             return array(
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
                 'element' => array(
                     'name' => 'a',
                     'text' => $matches[1],
@@ -1114,7 +1114,7 @@ class Parsedown
         }
 
         return array(
-            'extent' => strlen($matches[0]),
+            'extent' => mb_strlen($matches[0]),
             'element' => array(
                 'name' => $emphasis,
                 'handler' => 'line',
@@ -1141,7 +1141,7 @@ class Parsedown
             return;
         }
 
-        $Excerpt['text']= substr($Excerpt['text'], 1);
+        $Excerpt['text']= mb_substr($Excerpt['text'], 1);
 
         $Link = $this->inlineLink($Excerpt);
 
@@ -1188,9 +1188,9 @@ class Parsedown
         {
             $Element['text'] = $matches[1];
 
-            $extent += strlen($matches[0]);
+            $extent += mb_strlen($matches[0]);
 
-            $remainder = substr($remainder, $extent);
+            $remainder = mb_substr($remainder, $extent);
         }
         else
         {
@@ -1203,10 +1203,10 @@ class Parsedown
 
             if (isset($matches[2]))
             {
-                $Element['attributes']['title'] = substr($matches[2], 1, - 1);
+                $Element['attributes']['title'] = mb_substr($matches[2], 1, - 1);
             }
 
-            $extent += strlen($matches[0]);
+            $extent += mb_strlen($matches[0]);
         }
         else
         {
@@ -1215,7 +1215,7 @@ class Parsedown
                 $definition = $matches[1] ? $matches[1] : $Element['text'];
                 $definition = strtolower($definition);
 
-                $extent += strlen($matches[0]);
+                $extent += mb_strlen($matches[0]);
             }
             else
             {
@@ -1252,7 +1252,7 @@ class Parsedown
         {
             return array(
                 'markup' => $matches[0],
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
             );
         }
 
@@ -1260,7 +1260,7 @@ class Parsedown
         {
             return array(
                 'markup' => $matches[0],
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
             );
         }
 
@@ -1268,7 +1268,7 @@ class Parsedown
         {
             return array(
                 'markup' => $matches[0],
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
             );
         }
     }
@@ -1304,7 +1304,7 @@ class Parsedown
         if ($Excerpt['text'][1] === '~' and preg_match('/^~~(?=\S)(.+?)(?<=\S)~~/', $Excerpt['text'], $matches))
         {
             return array(
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
                 'element' => array(
                     'name' => 'del',
                     'text' => $matches[1],
@@ -1324,7 +1324,7 @@ class Parsedown
         if (preg_match('/\bhttps?:[\/]{2}[^\s<]+\b\/*/ui', $Excerpt['context'], $matches, PREG_OFFSET_CAPTURE))
         {
             $Inline = array(
-                'extent' => strlen($matches[0][0]),
+                'extent' => mb_strlen($matches[0][0]),
                 'position' => $matches[0][1],
                 'element' => array(
                     'name' => 'a',
@@ -1346,7 +1346,7 @@ class Parsedown
             $url = str_replace(array('&', '<'), array('&amp;', '&lt;'), $matches[1]);
 
             return array(
-                'extent' => strlen($matches[0]),
+                'extent' => mb_strlen($matches[0]),
                 'element' => array(
                     'name' => 'a',
                     'text' => $url,
@@ -1441,10 +1441,10 @@ class Parsedown
 
         $trimmedMarkup = trim($markup);
 
-        if ( ! in_array('', $lines) and substr($trimmedMarkup, 0, 3) === '<p>')
+        if ( ! in_array('', $lines) and mb_substr($trimmedMarkup, 0, 3) === '<p>')
         {
             $markup = $trimmedMarkup;
-            $markup = substr($markup, 3);
+            $markup = mb_substr($markup, 3);
 
             $position = strpos($markup, "</p>");
 
