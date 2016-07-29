@@ -21,7 +21,7 @@ class Parsedown
 
     # ~
 
-    function text($text)
+    public function text($text)
     {
         # make sure no definitions are set
         $this->DefinitionData = array();
@@ -48,7 +48,7 @@ class Parsedown
     # Setters
     #
 
-    function setBreaksEnabled($breaksEnabled)
+    public function setBreaksEnabled($breaksEnabled)
     {
         $this->breaksEnabled = $breaksEnabled;
 
@@ -57,7 +57,7 @@ class Parsedown
 
     protected $breaksEnabled;
 
-    function setMarkupEscaped($markupEscaped)
+    public function setMarkupEscaped($markupEscaped)
     {
         $this->markupEscaped = $markupEscaped;
 
@@ -66,7 +66,7 @@ class Parsedown
 
     protected $markupEscaped;
 
-    function setUrlsLinked($urlsLinked)
+    public function setUrlsLinked($urlsLinked)
     {
         $this->urlsLinked = $urlsLinked;
 
@@ -993,13 +993,11 @@ class Parsedown
 
         # $excerpt is based on the first occurrence of a marker
 
-        $markerPosition = 0;
-
         while ($excerpt = strpbrk($text, $this->inlineMarkerList))
         {
             $marker = $excerpt[0];
 
-            $markerPosition += mb_strpos($text, $marker);
+            $markerPosition = mb_strpos($text, $marker);
 
             $Excerpt = array('text' => $excerpt, 'context' => $text);
 
@@ -1524,7 +1522,7 @@ class Parsedown
     # Static Methods
     #
 
-    static function instance($name = 'default')
+    public static function instance($name = 'default')
     {
         if (isset(self::$instances[$name]))
         {
